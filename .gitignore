@@ -19,3 +19,4 @@ www/node_modules
 npm-debug.log
 .data
 .aider*
+tmp/
