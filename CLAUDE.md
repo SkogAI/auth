@@ -1,72 +1,91 @@
-# Supabase Auth - Development Setup
+# Supabase Auth - Fork
 
-## Configuration Philosophy
+## Project Status
 
-- `.env` = Complete working configuration for auth service
-- `.env.docker` = Minimal overrides ONLY for Docker-specific differences (hostname, paths)
-- Docker sources `.env` first, then applies `.env.docker` overrides
+This is a **fork** of [Supabase Auth](https://github.com/supabase/auth) with custom modifications:
 
-## Development Modes
+- Changed source code to temporarily fix SAML nil pointer bug in `internal/conf/saml.go`
+- Custom build scripts in `.claude/scripts/`
 
-### Native Mode (port 9998)
+**Note**: Do not merge upstream changes without careful review - we've diverged from mainline and want to get back as soon as possible.
+
+## Quick Start
+
+### Build and Run (Native Mode - port 9998)
+
 ```bash
-./auth migrate  # Run migrations
-./auth serve    # Start service
+./.claude/scripts/local/build.sh  # Format, vet, lint, build
+./auth migrate -c .env            # Run database migrations
+./auth serve -c .env              # Start server
 ```
 
 ### Docker Mode (port 9999)
+
 ```bash
-make docker-build  # First time: builds, runs migrations, stops
-make dev           # Start containers
+./.claude/scripts/container/build.sh  # First time: builds, runs migrations, stops
+./.claude/scripts/container/dev.sh    # Start containers
+./.claude/scripts/container/down.sh   # Stop containers
 ```
+
+## Configuration
+
+- `.env` - Complete working configuration (85+ variables)
+- `.env.docker` - Docker-specific overrides ONLY (DATABASE_URL, paths)
+- `example.env` - Template with comments
+
+Docker sources `.env` first, then applies `.env.docker` overrides.
 
 ## Database
 
-### Native: Local PostgreSQL
+**Native (port 9998):**
+
 - Host: `localhost:5432`
-- User: `supabase_auth_admin:root`
+- User: `supabase_auth_admin` / Password: `root`
 - Connect: `PGPASSWORD=root psql -h localhost -U supabase_auth_admin -d postgres`
 
-### Docker: Container PostgreSQL
-- Host (from outside): `localhost:54321` (mapped to avoid local postgres conflict)
-- Host (inside Docker): `postgres:5432`
-- User: `supabase_auth_admin:root`
+**Docker (port 9999):**
+
+- Host (external): `localhost:54321`
+- Host (internal): `postgres:5432`
+- User: `supabase_auth_admin` / Password: `root`
 - Connect: `PGPASSWORD=root psql -h localhost -p 54321 -U supabase_auth_admin -d postgres`
 
 ## Migrations
 
-Migrations are **idempotent** - run `./auth migrate` anytime, it applies only missing migrations.
+61 migrations covering:
 
-## Auth CLI Commands
+- Initial schema (users, identities, sessions)
+- OAuth/SAML support
+- MFA/WebAuthn
+- Latest: Sept 2025
 
-The `./auth` binary provides these commands:
+Migrations are **idempotent** - safe to re-run.
 
-### Core Commands
-- `./auth migrate` - Migrate database structures (creates tables, adds columns/indexes)
-- `./auth serve` - Start API server
-- `./auth version` - Show version information
-- `./auth admin` - Admin operations (createuser, deleteuser)
+## Scripts Overview
 
-### Global Flags
-- `-c, --config <file>` - Load configuration from file (e.g., `-c .env`)
-- `-d, --config-dir <dir>` - Directory with sorted config files to watch for changes
+### Local Development (`.claude/scripts/local/`)
 
-### Examples
+- `build.sh` - Format + vet + staticcheck + build + verify
+
+### Container Operations (`.claude/scripts/container/`)
+
+- `build.sh` - Full rebuild: build images, run migrations, stop
+- `dev.sh` - Start containers with hot-reload
+- `down.sh` - Stop containers
+- `test.sh` - Run tests in containers
+- `clean.sh` - Remove containers and volumes
+
+## Auth CLI
+
 ```bash
-# Run migrations with specific config
-./auth migrate -c .env
-
-# Start server with config
-./auth serve -c .env
-
-# Create admin user
-./auth admin createuser -a authenticated
+./auth migrate [-c .env]           # Run migrations
+./auth serve [-c .env]             # Start server
+./auth version                     # Show version
+./auth admin createuser [flags]    # Create admin user
 ```
 
-## Make Commands
+## Development Notes
 
-- `make build` - Build auth binary
-- `make migrate_dev` - Run migrations
-- `make dev` - Start Docker containers
-- `make down` - Stop Docker containers
-- `make docker-build` - Full rebuild with migrations
+- Go 1.23.7
+- PostgreSQL 15
+- CGO disabled (statically linked binaries)

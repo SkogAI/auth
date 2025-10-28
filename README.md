@@ -1,5 +1,7 @@
 # Auth - Authentication and User Management by Supabase
 
+> **⚠️ FORK NOTICE**: This is a customized fork of [Supabase Auth](https://github.com/supabase/auth) with local modifications. See [`CLAUDE.md`](CLAUDE.md) for fork-specific documentation, build scripts, and known issues.
+
 [![Coverage Status](https://coveralls.io/repos/github/supabase/auth/badge.svg?branch=master)](https://coveralls.io/github/supabase/auth?branch=master)
 
 Auth is a user management and authentication server written in Go that powers
