@@ -1,0 +1,14 @@
+Client ID: 343131272773697539
+Client Secret: LNkNyL7gdIbdrWEyQztKXCr37ZqNJ2hdYz6hXo7PVhNSSoUlKxjHLOiRKjNDqGqD
+
+
+Authorization Endpoint: https://auth.aldervall.se/oauth/v2/authorize
+Device Authorization Endpoint : https://auth.aldervall.se/oauth/v2/device_authorization
+End Session Endpoint: https://auth.aldervall.se/oidc/v1/end_session
+Introspection Endpoint : https://auth.aldervall.se/oauth/v2/introspect
+JKWS URI : https://auth.aldervall.se/oauth/v2/keys
+Revocation Endpoint : https://auth.aldervall.se/oauth/v2/revoke
+Token Endpoint : https://auth.aldervall.se/oauth/v2/token
+Userinfo Endpoint : https://auth.aldervall.se/oidc/v1/userinfo
+
+https://auth.aldervall.se/.well-known/openid-configuration
