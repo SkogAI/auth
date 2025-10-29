@@ -129,12 +129,6 @@ func (c *SAMLConfiguration) PopulateFields(externalURL string) error {
 }
 
 func (c *SAMLConfiguration) createCertificate(certTemplate *x509.Certificate) error {
-	if c.RSAPrivateKey == nil {
-		return fmt.Errorf("RSAPrivateKey is nil, call PopulateFields first")
-	}
-	if c.RSAPublicKey == nil {
-		return fmt.Errorf("RSAPublicKey is nil, call PopulateFields first")
-	}
 	certDer, err := x509.CreateCertificate(nil, certTemplate, certTemplate, c.RSAPublicKey, c.RSAPrivateKey)
 	if err != nil {
 		return err
