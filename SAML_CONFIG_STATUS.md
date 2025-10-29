@@ -129,11 +129,35 @@ SurName → last_name
 - Or manually configure using values above
 
 ### 3. Test Authentication Flow
+
+**Complete testing guide available at:** `/tmp/saml-testing-guide.md`
+
+**Quick Test:**
 1. Navigate to: `https://auth.skogai.se/sso/saml/acs?domain=aldervall.se`
-2. Should redirect to Zitadel login
-3. After Zitadel authentication, should redirect back with SAML assertion
-4. Supabase validates assertion and creates/links user
-5. Returns JWT token
+2. Should redirect to Zitadel login page
+3. Enter test user credentials (user@aldervall.se)
+4. After authentication, Zitadel redirects back with SAML assertion
+5. Supabase validates assertion and creates/links user
+6. Returns JWT token and establishes session
+
+**Verification Steps:**
+```sql
+-- Check user was created
+SELECT id, email, raw_user_meta_data, created_at
+FROM auth.users
+WHERE email = 'test@aldervall.se';
+
+-- Check identity record
+SELECT id, user_id, provider, identity_data
+FROM auth.identities
+WHERE provider = 'saml';
+
+-- Check session
+SELECT id, user_id, created_at
+FROM auth.sessions
+ORDER BY created_at DESC
+LIMIT 1;
+```
 
 ## Environment Files Status
 
@@ -211,6 +235,12 @@ tail -50 /tmp/auth.log
 
 ## Documentation References
 
+### Current Configuration Guides (Generated)
+- `/tmp/zitadel-saml-configuration-guide.md` - Step-by-step Zitadel SAML app setup
+- `/tmp/saml-testing-guide.md` - Comprehensive testing procedures
+- `/tmp/sp-metadata.xml` - Service Provider metadata file
+
+### Project Documentation (Historical)
 Project documentation at `/home/skogix/skogai/`:
 - `guides/saml/SAML Implementation Summary.md`
 - `guides/saml/ZITADEL IdP Setup Guide.md`
@@ -218,7 +248,7 @@ Project documentation at `/home/skogix/skogai/`:
 - `guides/saml/SAML Admin API Reference.md`
 - `guides/saml/SAML User Guide.md`
 
-Note: Documentation may be outdated - verify actual implementation against this status document.
+⚠️ **Note:** Historical documentation may be outdated. Refer to current configuration guides above for accurate, up-to-date information.
 
 ## Architecture Integration
 

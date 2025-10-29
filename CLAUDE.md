@@ -281,9 +281,34 @@ Migrations are **idempotent** - safe to re-run. Always run migrations before sta
 - **Database**: ✅ Zitadel provider registered (resource_id: `zitadel-aldervall`, domain: `aldervall.se`)
 - **Next Steps**: Configure Zitadel SAML application with Service Provider metadata
 
+### SAML Integration Status
+
+**Phase 1: Service Provider Setup** ✅ COMPLETE
+- SP metadata endpoint active at http://localhost:9999/sso/saml/metadata
+- SAML private key configured and secured (permissions 600)
+- All SP endpoints functional (ACS, SLO, metadata)
+
+**Phase 2: Database Registration** ✅ COMPLETE
+- SSO Provider registered: `a1d79e11-0000-0000-0000-000000000001`
+- SAML Provider linked: `25cafa85-9f80-4186-b55e-0941767774c7`
+- Domain configured: `aldervall.se`
+- IdP metadata stored and validated
+
+**Phase 3: Zitadel Configuration** ⏳ MANUAL STEP REQUIRED
+- Configuration guide: `/tmp/zitadel-saml-configuration-guide.md`
+- SP metadata available for import
+- Attribute mapping defined
+- Requires admin access to Zitadel console
+
+**Phase 4: Testing** ⏳ PENDING (Awaits Zitadel configuration)
+- Testing guide: `/tmp/saml-testing-guide.md`
+- Includes endpoint verification, auth flow, logout, error handling
+- Database verification queries prepared
+
 ### Known Issues/Tech Debt
-- **Zitadel SAML App Configuration**: Need to configure Zitadel side with SP metadata from http://localhost:9999/sso/saml/metadata
-- **Performance bottlenecks**: TBD (monitor JWT validation under load)
+- **Zitadel SAML App Configuration**: Manual configuration required (see `/tmp/zitadel-saml-configuration-guide.md`)
+- **End-to-End Testing**: Pending Zitadel configuration completion
+- **Performance bottlenecks**: TBD (monitor JWT validation under load after deployment)
 - **Security considerations**:
   - All JWT secrets must be in `.env`, never hardcoded
   - Database passwords must be rotated regularly
