@@ -14,9 +14,12 @@ SAML authentication is **functionally complete** with end-to-end tests passing (
 
 ## Issues Summary
 
+**GitHub Issues Created**: [View all issues](https://github.com/SkogAI/auth/issues)
+
 ### 🟠 HIGH Priority (P1) - **Required for Production**
 
 #### Issue #2: Missing CSRF Protection on SAML ACS Endpoint
+**GitHub**: [#1](https://github.com/SkogAI/auth/issues/1)
 - **Location**: `internal/api/samlacs.go:98`
 - **Impact**: CSRF attacks, session fixation (OWASP A01:2021)
 - **Effort**: Medium (8-16 hours)
@@ -50,6 +53,7 @@ if !constantTimeCompare(parts[1], expectedToken) {
 ---
 
 #### Issue #3: Insufficient Rate Limiting on Auth Endpoints
+**GitHub**: [#2](https://github.com/SkogAI/auth/issues/2)
 - **Location**: `/sso`, `/sso/saml/acs`, `/token` endpoints
 - **Impact**: DoS via resource exhaustion, brute force attacks
 - **Effort**: Medium (16 hours)
@@ -72,6 +76,7 @@ if !constantTimeCompare(parts[1], expectedToken) {
 ### 🟡 MEDIUM Priority (P2) - **Recommended Improvements**
 
 #### Issue #4: Missing Migration for attribute_mapping Fix
+**GitHub**: [#4](https://github.com/SkogAI/auth/issues/4)
 - **Location**: Commit `a34c1750` bypassed migration framework
 - **Impact**: Fresh deployments will fail with JSON unmarshal error
 - **Effort**: Small (4 hours)
@@ -106,6 +111,7 @@ AND jsonb_typeof(attribute_mapping->'keys') = 'object';
 ---
 
 #### Issue #5: Undefined 24-Service Integration Pattern
+**GitHub**: [#5](https://github.com/SkogAI/auth/issues/5)
 - **Location**: `SAML_CONFIG_STATUS.md:417`
 - **Impact**: Blocked migration of 24 downstream services
 - **Effort**: Large (40 hours)
@@ -149,6 +155,7 @@ func ValidateToken(tokenString string) (*Claims, error) {
 ---
 
 #### Issue #6: No High Availability or Failover Strategy
+**GitHub**: [#6](https://github.com/SkogAI/auth/issues/6)
 - **Location**: Infrastructure (single auth instance + single DB)
 - **Impact**: Auth service failure blocks all 24 downstream services
 - **Effort**: Large (80 hours)
@@ -230,6 +237,7 @@ func ValidateToken(tokenString string) (*Claims, error) {
 ---
 
 #### Issue #7: Overly Permissive CORS Configuration
+**GitHub**: [#3](https://github.com/SkogAI/auth/issues/3)
 - **Location**: `.env` - `GOTRUE_CORS_ALLOWED_ORIGINS="*"`
 - **Impact**: Increased XSS attack surface, complicates CSRF defenses
 - **Effort**: Small (2 hours)
@@ -262,6 +270,7 @@ curl -H "Origin: https://evil.com" https://auth.skogai.se/health
 ---
 
 #### Issue #8: Weak RelayState Validation (Timing Attack)
+**GitHub**: [#7](https://github.com/SkogAI/auth/issues/7)
 - **Location**: `internal/api/samlacs.go:90-96`
 - **Impact**: Attacker can use timing differences to guess valid RelayState values
 - **Effort**: Small (4 hours)
@@ -322,18 +331,18 @@ if time.Now().Add(jitter).After(expiresAt) {
 ## Production Readiness Checklist
 
 ### 🔴 Blocking Issues (Must Fix Before Production)
-- [ ] Implement CSRF protection (Issue #2)
-- [ ] Add rate limiting (Issue #3)
-- [ ] Restrict CORS origins (Issue #7)
+- [ ] Implement CSRF protection ([#1](https://github.com/SkogAI/auth/issues/1))
+- [ ] Add rate limiting ([#2](https://github.com/SkogAI/auth/issues/2))
+- [ ] Restrict CORS origins ([#3](https://github.com/SkogAI/auth/issues/3))
 
 ### 🟡 Recommended Before Launch
-- [ ] Create attribute_mapping migration (Issue #4)
-- [ ] Define service integration pattern (Issue #5)
-- [ ] Fix timing attack vulnerability (Issue #8)
+- [ ] Create attribute_mapping migration ([#4](https://github.com/SkogAI/auth/issues/4))
+- [ ] Define service integration pattern ([#5](https://github.com/SkogAI/auth/issues/5))
+- [ ] Fix timing attack vulnerability ([#7](https://github.com/SkogAI/auth/issues/7))
 
 ### ⚪ Post-Launch (Can Defer)
-- [ ] Implement HA/failover strategy (Issue #6)
-- [ ] Rotate exposed secrets (Issue #1, if reconsidered)
+- [ ] Implement HA/failover strategy ([#6](https://github.com/SkogAI/auth/issues/6))
+- [ ] Rotate exposed secrets (Risk accepted - reconsider if moving to production)
 
 ---
 
@@ -393,30 +402,30 @@ if time.Now().Add(jitter).After(expiresAt) {
 ## Next Steps
 
 ### Immediate Actions (This Week)
-1. **Implement CSRF protection** (Issue #2)
+1. **Implement CSRF protection** ([#1](https://github.com/SkogAI/auth/issues/1))
    - Add token generation in SSO initiation
    - Store token with 120s expiry
    - Validate on ACS callback
    - Test with studio login flow
 
-2. **Add rate limiting** (Issue #3)
+2. **Add rate limiting** ([#2](https://github.com/SkogAI/auth/issues/2))
    - Implement middleware with per-IP limits
    - Configure thresholds (5 req/min for /sso)
    - Add exponential backoff for failed auth
    - Test with load simulation
 
-3. **Restrict CORS** (Issue #7)
+3. **Restrict CORS** ([#3](https://github.com/SkogAI/auth/issues/3))
    - Update `.env` with whitelisted origins
    - Test studio login still works
    - Verify other origins are blocked
 
 ### Short-term (Next Sprint)
-4. **Create attribute_mapping migration** (Issue #4)
-5. **Fix timing attack** (Issue #8)
-6. **Document integration pattern** (Issue #5)
+4. **Create attribute_mapping migration** ([#4](https://github.com/SkogAI/auth/issues/4))
+5. **Fix timing attack** ([#7](https://github.com/SkogAI/auth/issues/7))
+6. **Document integration pattern** ([#5](https://github.com/SkogAI/auth/issues/5))
 
 ### Long-term (Next Quarter)
-7. **Implement HA strategy** (Issue #6)
+7. **Implement HA strategy** ([#6](https://github.com/SkogAI/auth/issues/6))
 8. **Conduct load testing** (target: 1000 req/s)
 9. **Set up monitoring and alerting**
 
